@@ -3,374 +3,611 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>4K Downloader – Free video downloader for Windows</title>
-<meta name="description" content="4K Downloader is a free Windows app that saves videos and playlists in up to 8K, with a built-in queue, SponsorBlock, MP4, MKV and MP3 output, and automatic audio and video merging.">
-<meta name="theme-color" content="#0c0b13">
+<title>Prismo – Free 4K video and audio downloader for Windows and Android</title>
+<meta name="description" content="Prismo is a free, open-source downloader for Windows and Android. Save 4K video and MP3 audio from YouTube, Twitch, TikTok, Instagram, X, Facebook and 1,000+ sites, locally, with no ads and no file limits.">
+<meta name="theme-color" content="#0F1117">
 <meta name="color-scheme" content="dark">
 <meta property="og:type" content="website">
-<meta property="og:title" content="4K Downloader – Free video downloader for Windows">
-<meta property="og:description" content="Save videos and playlists in up to 8K. Built-in queue, SponsorBlock, and automatic merging. Free for Windows.">
+<meta property="og:title" content="Prismo – Download 4K video and audio. Fast, private, zero limits.">
+<meta property="og:description" content="Free and open source for Windows and Android. Runs locally, powered by yt-dlp and FFmpeg.">
 <meta name="twitter:card" content="summary">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236a45f4'/%3E%3Cpath d='M16 7v13m0 0-5-5m5 5 5-5M9 25h14' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="logo.png">
 
 <style>
-  /* ---------- Tokens ---------- */
   :root {
-    --ink: #0c0b13;        /* page background */
-    --panel: #14121d;      /* raised surfaces */
-    --panel-2: #1b1827;    /* inset surfaces */
-    --rule: #2b2740;       /* hairlines */
-    --text: #ece9f6;
-    --muted: #a09bb8;
-    --signal: #9a82ff;     /* accent for bars, numerals, links */
-    --btn: #6a45f4;        /* button fill (white text passes AA) */
-    --btn-hover: #5a37e8;
-    --green: #3fcf8e;
-    --cyan: #4cc9f0;
-    --amber: #e0a030;
-    --display: "Bahnschrift", "DIN Alternate", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
-    --body: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --bg: #0F1117;
+    --surface: #181B24;
+    --surface-2: #1F2330;
+    --border: #262B38;
+    --text: #F8FAFC;
+    --muted: #94A3B8;
+    --coral: #FF6B9D;
+    --coral-hi: #FF86B1;
+    --yellow: #FACC15;
+    --yellow-2: #EAB308;
+    --display: "Bahnschrift", "DIN Alternate", "Roboto Condensed", "Arial Narrow", system-ui, sans-serif;
+    --body: system-ui, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     color-scheme: dark;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-  body {
-    margin: 0;
-    background: var(--ink);
-    color: var(--text);
-    font: 400 1.0625rem/1.6 var(--body);
-  }
-  img, svg { display: block; max-width: 100%; }
-  a { color: var(--signal); }
-  :focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; border-radius: 4px; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 400 1.0625rem/1.6 var(--body); }
+  a { color: var(--coral); text-underline-offset: 3px; }
+  a:hover { color: var(--coral-hi); }
+  h1, h2, h3 { font-family: var(--display); margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+  p { margin: 0; }
+  code { font: 600 .9em/1 ui-monospace, "Cascadia Mono", Consolas, monospace; background: var(--surface-2); padding: .2em .45em; border-radius: 6px; }
+  :focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; border-radius: 6px; }
 
-  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 40px); }
-
-  .skip {
-    position: absolute; left: 12px; top: -60px; z-index: 10;
-    background: var(--text); color: var(--ink); padding: .6rem 1rem; border-radius: 8px; text-decoration: none;
-  }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 clamp(18px, 5vw, 40px); }
+  .skip { position: absolute; left: 12px; top: -64px; z-index: 50; background: var(--text); color: var(--bg); padding: .6rem 1rem; border-radius: 8px; text-decoration: none; }
   .skip:focus { top: 12px; }
 
-  h1, h2, h3 { font-family: var(--display); font-weight: 600; margin: 0; letter-spacing: -.01em; }
+  /* ---------- Logo (image with a CSS fallback that never looks broken) ---------- */
+  .logo { --s: 40px; position: relative; display: inline-block; width: var(--s); height: var(--s); flex: none; }
+  .logo img { position: relative; display: block; width: 100%; height: 100%; object-fit: contain; }
+  .logo-fb { position: absolute; inset: 0; border-radius: 24%; background: var(--yellow); overflow: hidden; }
+  .logo-fb::before { content: ""; position: absolute; inset: 12% 22% 16% 16%; background: var(--coral); clip-path: polygon(0 0, 100% 24%, 62% 56%, 76% 100%, 0 72%); }
+  .logo.ok .logo-fb { display: none; }
+  .logo.bad img { display: none; }
 
   /* ---------- Buttons ---------- */
   .btn {
-    display: inline-flex; align-items: center; gap: .7rem;
-    font: 600 1.0625rem/1 var(--body);
-    padding: 1rem 1.5rem; border-radius: 10px;
-    color: #fff; background: var(--btn); text-decoration: none;
-    transition: background .15s ease, transform .15s ease;
+    display: inline-flex; align-items: center; gap: .8rem; padding: .95rem 1.35rem; border-radius: 12px;
+    font: 700 1.05rem/1.15 var(--body); text-decoration: none; color: var(--bg);
+    border: 1px solid transparent; transition: background .15s ease, border-color .15s ease, transform .15s ease;
   }
-  .btn:hover { background: var(--btn-hover); }
   .btn:active { transform: translateY(1px); }
-  .btn svg { width: 1.25em; height: 1.25em; flex: none; }
-  .btn-lg { padding: 1.2rem 1.9rem; font-size: 1.2rem; }
-  .btn-sm { padding: .65rem 1.05rem; font-size: .95rem; }
+  .btn svg { width: 1.45rem; height: 1.45rem; flex: none; }
+  .btn small { display: block; margin-top: .2rem; font-weight: 600; font-size: .8rem; opacity: .78; }
+  .btn-win { background: var(--coral); }
+  .btn-win:hover { background: var(--coral-hi); color: var(--bg); }
+  .btn-and { background: var(--yellow); }
+  .btn-and:hover { background: #FDE047; color: var(--bg); }
+  .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); padding: .6rem 1.05rem; font-size: .95rem; }
+  .btn-ghost:hover { color: var(--text); border-color: var(--coral); }
 
-  /* ---------- Navigation ---------- */
-  .nav { border-bottom: 1px solid var(--rule); }
-  .nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 68px; }
-  .brand { display: inline-flex; align-items: center; gap: .7rem; color: var(--text); text-decoration: none; font: 600 1.25rem/1 var(--display); }
-  .brand svg { width: 30px; height: 30px; }
-  .nav-links { display: flex; align-items: center; gap: clamp(16px, 3vw, 32px); }
-  .nav-links a:not(.btn) { color: var(--muted); text-decoration: none; font-size: .98rem; }
-  .nav-links a:not(.btn):hover { color: var(--text); }
+  /* ---------- Navbar ---------- */
+  .nav { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--border); }
+  .nav-in { display: flex; align-items: center; gap: 24px; min-height: 68px; flex-wrap: wrap; }
+  .brand { display: inline-flex; align-items: center; gap: .7rem; color: var(--text); text-decoration: none; font: 700 1.45rem/1 var(--display); }
+  .brand:hover { color: var(--text); }
+  .links { display: flex; gap: clamp(14px, 2.4vw, 30px); margin-left: auto; }
+  .links a { color: var(--muted); text-decoration: none; font-size: .98rem; }
+  .links a:hover { color: var(--text); }
 
   /* ---------- Hero ---------- */
-  .hero { padding: clamp(48px, 8vw, 96px) 0 clamp(56px, 8vw, 104px); }
-  .hero .wrap {
-    display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
-    gap: clamp(36px, 6vw, 84px); align-items: center;
-  }
-  .hero h1 {
-    font-size: clamp(2.7rem, 6.2vw, 4.7rem); line-height: 1.02;
-    font-variation-settings: "wdth" 88;
-  }
-  .hero .lead { margin: 1.5rem 0 0; max-width: 33rem; color: var(--muted); font-size: 1.2rem; }
-  .cta-row { margin-top: 2.2rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem 1.8rem; }
-  .cta-note { margin: .9rem 0 0; color: var(--muted); font-size: .95rem; }
-  .text-link { color: var(--text); text-underline-offset: 5px; text-decoration-color: var(--rule); text-decoration-thickness: 2px; }
-  .text-link:hover { text-decoration-color: var(--signal); }
+  .hero { padding: clamp(40px, 7vw, 84px) 0 clamp(48px, 7vw, 88px); }
+  .badge { display: inline-flex; align-items: center; gap: .6rem; padding: .35rem .9rem .35rem .4rem; border: 1px solid var(--border); background: var(--surface); border-radius: 999px; color: var(--muted); font-size: .92rem; }
+  .badge .logo { --s: 26px; }
+  .hero h1 { margin-top: 1.4rem; font-size: clamp(2.6rem, 6.6vw, 5rem); line-height: 1.02; font-weight: 700; max-width: 17ch; }
+  .lead { margin-top: 1.4rem; max-width: 40rem; color: var(--muted); font-size: 1.18rem; }
+  .cta { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 14px; }
+  .fine { margin-top: 1rem; color: var(--muted); font-size: .95rem; }
+  .os-note { display: none; margin-top: .4rem; color: var(--text); font-size: .95rem; }
+  body[data-os="windows"] .os-windows, body[data-os="android"] .os-android, body[data-os="other"] .os-other { display: block; }
+  body[data-os="android"] .btn-and { order: -1; }
 
-  /* Resolution ladder: pixels per frame, drawn to scale */
-  .ladder {
-    margin: 0; padding: clamp(20px, 3vw, 30px);
-    background:
-      linear-gradient(var(--rule) 1px, transparent 1px) 0 0 / 100% 28px,
-      linear-gradient(90deg, var(--rule) 1px, transparent 1px) 0 0 / 28px 100%,
-      var(--panel);
-    background-blend-mode: soft-light, soft-light, normal;
-    border: 1px solid var(--rule); border-radius: 16px;
-  }
-  .ladder ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
-  .ladder li {
-    display: grid; grid-template-columns: 4.6rem 4.2rem minmax(0, 1fr); align-items: center; gap: 10px;
-  }
-  .ladder b {
-    font: 600 2.1rem/1 var(--display); font-variant-numeric: tabular-nums; font-variation-settings: "wdth" 85;
-    color: var(--muted);
-  }
-  .ladder .tag { font-size: .95rem; color: var(--muted); }
-  .ladder .bar { display: block; height: 16px; }
-  .ladder .bar i {
-    display: block; height: 100%; min-width: 6px; width: var(--w);
-    background: #5c5478; border-radius: 3px;
-    animation: grow 1.1s cubic-bezier(.2, .7, .2, 1) both;
-    animation-delay: calc(var(--n) * .13s + .2s);
-  }
-  .ladder .hi b { color: var(--text); }
-  .ladder .hi .tag { color: var(--text); }
-  .ladder .hi .bar i { background: var(--signal); }
-  .ladder figcaption { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--rule); color: var(--muted); font-size: .95rem; line-height: 1.5; }
-  @keyframes grow { from { width: 0; } }
+  /* Showcase: yellow stage and coral shard echo the Prismo icon */
+  .showcase { margin-top: clamp(36px, 6vw, 64px); }
+  .toggle { display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  .toggle button { font: 600 .95rem/1 var(--body); color: var(--muted); background: transparent; border: 0; border-radius: 9px; padding: .7rem 1.15rem; cursor: pointer; }
+  .toggle button:hover { color: var(--text); }
+  .toggle button[aria-selected="true"] { background: var(--coral); color: var(--bg); }
+  .stage { position: relative; isolation: isolate; overflow: hidden; background: var(--yellow); border-radius: 22px; padding: clamp(18px, 4.5vw, 52px); }
+  .stage::before { content: ""; position: absolute; z-index: -1; left: -6%; top: -14%; width: 58%; height: 132%; background: var(--coral); clip-path: polygon(18% 0, 100% 10%, 64% 100%, 0 76%); }
+  .stage::after { content: ""; position: absolute; z-index: -1; left: 0; right: 0; bottom: 0; height: 36%; background: var(--yellow-2); clip-path: polygon(0 58%, 100% 0, 100% 100%, 0 100%); }
+  .panel[hidden] { display: none; }
+
+  .shot { display: none; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 28px 60px rgba(8, 10, 16, .5); }
+  .frame.has-shot .mock { display: none; }
+  .frame.has-shot .shot { display: block; margin: 0 auto; max-width: 900px; }
+  .frame-and.has-shot .shot { width: auto; max-width: 100%; max-height: 580px; border-radius: 30px; }
+
+  /* Windows app mockup */
+  .win { max-width: 860px; margin: 0 auto; background: var(--bg); border: 1px solid #2c3243; border-radius: 12px; overflow: hidden; box-shadow: 0 28px 60px rgba(8, 10, 16, .5); }
+  .w-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface); border-bottom: 1px solid var(--border); font-weight: 600; font-size: .9rem; }
+  .w-bar .logo { --s: 18px; }
+  .w-ctl { margin-left: auto; display: flex; gap: 6px; }
+  .w-ctl i { width: 10px; height: 10px; border-radius: 50%; background: #2f3648; }
+  .w-body { padding: 16px; display: grid; gap: 12px; }
+  .w-tabs { display: inline-flex; gap: 4px; padding: 4px; background: var(--surface); border-radius: 10px; width: max-content; }
+  .w-tabs span { padding: .4rem .9rem; border-radius: 7px; font-size: .82rem; font-weight: 600; color: var(--muted); }
+  .w-tabs .on { background: var(--coral); color: var(--bg); }
+  .w-url { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--surface-2); border-radius: 10px; padding: .7rem .9rem; color: var(--muted); font-size: .85rem; }
+  .w-url em { font-style: normal; background: var(--coral); color: var(--bg); font-weight: 700; border-radius: 8px; padding: .35rem .8rem; font-size: .8rem; white-space: nowrap; }
+  .w-row { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 12px; align-items: center; background: var(--surface); border-radius: 10px; padding: 10px; }
+  .th { height: 54px; border-radius: 7px; }
+  .t1 { background: var(--coral); } .t2 { background: var(--yellow); } .t3 { background: #64748B; }
+  .w-row b, .p-card b { display: block; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .w-row small, .p-card small { display: block; color: var(--muted); font-size: .76rem; margin: .1rem 0 .5rem; }
+  .bar { height: 6px; border-radius: 3px; background: #2a3042; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: var(--p); background: var(--coral); border-radius: 3px; }
+  .pill { font-size: .72rem; font-weight: 700; padding: .25rem .65rem; border-radius: 8px; color: var(--bg); white-space: nowrap; }
+  .pill.dl { background: var(--coral); } .pill.mg { background: #F59E0B; } .pill.ok { background: var(--yellow); }
+
+  /* Android phone mockup */
+  .phone { width: min(280px, 100%); margin: 0 auto; background: var(--bg); border: 8px solid #07080c; border-radius: 38px; overflow: hidden; box-shadow: 0 28px 60px rgba(8, 10, 16, .5); }
+  .p-top { display: flex; align-items: center; gap: 8px; padding: 14px 14px 10px; font-weight: 700; }
+  .p-top .logo { --s: 24px; }
+  .p-share { margin: 0 12px 10px; padding: 9px 11px; border-radius: 12px; background: var(--surface-2); font-size: .78rem; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+  .p-share em { font-style: normal; background: var(--coral); color: var(--bg); font-weight: 700; border-radius: 7px; padding: .25rem .6rem; }
+  .p-list { padding: 0 12px 12px; display: grid; gap: 10px; }
+  .p-card { background: var(--surface); border-radius: 14px; padding: 10px; display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 10px; align-items: center; }
+  .p-card .th { height: 44px; }
+  .p-nav { display: flex; border-top: 1px solid var(--border); }
+  .p-nav span { flex: 1; text-align: center; padding: .75rem 0; font-size: .78rem; font-weight: 600; color: var(--muted); }
+  .p-nav .on { color: var(--coral); }
 
   /* ---------- Sections ---------- */
-  .section { padding: clamp(56px, 8vw, 100px) 0; }
-  .section h2 { font-size: clamp(1.9rem, 3.8vw, 2.8rem); line-height: 1.1; max-width: 22ch; }
-  .section-intro { margin: 1rem 0 0; color: var(--muted); max-width: 40rem; }
+  .section { padding: clamp(52px, 8vw, 96px) 0; }
+  .section.tight-top { padding-top: 0; }
+  .section h2 { font-size: clamp(1.9rem, 4vw, 2.9rem); line-height: 1.08; max-width: 24ch; }
+  .intro { margin-top: .9rem; color: var(--muted); max-width: 40rem; }
 
-  /* Feature band: one container, three cells divided by hairlines */
-  .band {
-    margin-top: 2.5rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-    background: var(--panel); border: 1px solid var(--rule); border-radius: 16px; overflow: hidden;
-  }
-  .cell { padding: clamp(22px, 3vw, 32px); border-left: 1px solid var(--rule); display: flex; flex-direction: column; }
-  .cell:first-child { border-left: 0; }
-  .cell h3 { font-size: 1.6rem; line-height: 1.15; margin-top: 1.6rem; }
-  .cell p { margin: .8rem 0 0; color: var(--muted); font-size: 1rem; }
-  .vis { min-height: 176px; background: var(--panel-2); border: 1px solid var(--rule); border-radius: 10px; padding: 14px; font-size: .92rem; }
+  /* Feature bento */
+  .bento { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; margin-top: 2.2rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: clamp(20px, 2.6vw, 30px); display: flex; flex-direction: column; gap: .9rem; }
+  .card h3 { font-size: 1.5rem; line-height: 1.15; font-weight: 600; }
+  .card p { color: var(--muted); }
+  .s4 { grid-column: span 4; } .s2 { grid-column: span 2; } .s6 { grid-column: span 6; }
+  .card .spacer { flex: 1; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-size: .85rem; font-weight: 600; padding: .3rem .7rem; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); }
+  .chip.hot { background: var(--yellow); color: var(--bg); border-color: var(--yellow); }
+  .chip.pink { border-color: var(--coral); color: var(--coral); }
+  .mini { display: grid; gap: 9px; padding: 14px; border-radius: 10px; background: var(--surface-2); font-size: .85rem; color: var(--muted); }
+  .mini .row { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 10px; align-items: center; }
+  .hist { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; color: var(--text); }
+  .hist .chip.del { border-color: #EF4444; color: #FCA5A5; }
+  .track { position: relative; height: 14px; border-radius: 4px; background: #2a3042; }
+  .track u { position: absolute; top: 0; height: 100%; border-radius: 3px; text-decoration: none; }
+  .wide { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; align-items: center; }
 
-  /* 1: quality list */
-  .opts { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-  .opts li { display: flex; align-items: center; gap: 10px; padding: 5px 8px; border-radius: 6px; color: var(--muted); }
-  .opts li::before { content: ""; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--rule); flex: none; }
-  .opts .on { background: rgba(154, 130, 255, .14); color: var(--text); }
-  .opts .on::before { border-color: var(--signal); background: var(--signal); box-shadow: inset 0 0 0 2px var(--panel-2); }
+  /* Download cards */
+  .plats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 2.2rem; }
+  .plat { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: clamp(22px, 3vw, 34px); display: flex; flex-direction: column; gap: 1.2rem; }
+  .plat-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .plat h3 { font-size: 1.9rem; font-weight: 700; }
+  .ver { font: 700 .9rem/1 var(--body); padding: .4rem .75rem; border-radius: 8px; color: var(--bg); }
+  .plat-win .ver { background: var(--coral); } .plat-and .ver { background: var(--yellow); }
+  .specs { list-style: none; margin: 0; padding: 0; display: grid; gap: .65rem; color: var(--muted); }
+  .specs li { display: flex; gap: .7rem; align-items: baseline; }
+  .specs li::before { content: ""; flex: none; width: 9px; height: 9px; transform: translateY(-1px); border-radius: 2px; background: var(--c); }
+  .plat-win { --c: var(--coral); } .plat-and { --c: var(--yellow); }
+  .plat .btn { align-self: flex-start; }
+  .plat .more { font-size: .95rem; }
 
-  /* 2: playlist picker */
-  .pick { display: grid; gap: 2px; }
-  .pick div { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 6px; color: var(--muted); }
-  .box { width: 16px; height: 16px; border-radius: 4px; border: 2px solid var(--muted); flex: none; position: relative; }
-  .box.on { background: var(--signal); border-color: var(--signal); }
-  .box.on::after { content: ""; position: absolute; left: 3px; top: 0; width: 4px; height: 8px; border: solid var(--ink); border-width: 0 2px 2px 0; transform: rotate(45deg); }
-  .pick .head { color: var(--text); border-bottom: 1px solid var(--rule); border-radius: 0; margin-bottom: 4px; padding-bottom: 9px; }
-  .pick .head em { margin-left: auto; font-style: normal; color: var(--muted); font-size: .85rem; }
-  .pick .on-row { color: var(--text); }
+  /* Steps */
+  .steps { list-style: none; margin: 2.2rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(22px, 4vw, 52px); counter-reset: step; }
+  .steps > li { counter-increment: step; border-top: 2px solid var(--border); padding-top: 1rem; }
+  .steps > li::before { content: counter(step); display: block; font: 700 3.6rem/1 var(--display); color: var(--coral); margin-bottom: .7rem; }
+  .steps h3 { font-size: 1.45rem; font-weight: 600; }
+  .steps p { margin-top: .7rem; color: var(--muted); font-size: 1rem; }
+  .steps p b { color: var(--text); font-weight: 600; }
 
-  /* 3: sponsor timeline + queue */
-  .track { position: relative; height: 14px; border-radius: 3px; background: #3a3552; margin: 4px 0 8px; }
-  .track u { position: absolute; top: 0; height: 100%; border-radius: 2px; text-decoration: none; }
-  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: .85rem; margin-bottom: 16px; }
-  .legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; background: var(--c); }
-  .qrow { display: grid; grid-template-columns: 1fr 52px; gap: 10px; align-items: center; margin-top: 8px; color: var(--muted); font-size: .85rem; }
-  .qrow .meter { height: 6px; border-radius: 3px; background: #3a3552; overflow: hidden; }
-  .qrow .meter i { display: block; height: 100%; width: var(--p); background: var(--signal); border-radius: 3px; }
-  .qrow span:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 2.4rem; }
+  .note { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--c); border-radius: 12px; padding: 20px 22px; display: grid; gap: .6rem; }
+  .note h3 { font-size: 1.2rem; font-weight: 600; }
+  .note p { color: var(--muted); font-size: 1rem; }
+  .note.win { --c: var(--coral); } .note.and { --c: var(--yellow); }
+  .copyrow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .copyrow code { flex: 1 1 14rem; min-width: 0; overflow-x: auto; white-space: nowrap; padding: .6em .8em; }
+  .copyrow button { font: 700 .9rem/1 var(--body); padding: .7rem 1rem; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); cursor: pointer; }
+  .copyrow button:hover { border-color: var(--yellow); }
 
-  .also { margin: 1.6rem 0 0; color: var(--muted); max-width: 52rem; }
-  .also strong { color: var(--text); font-weight: 600; }
+  /* FAQ */
+  .faq { margin-top: 2rem; max-width: 52rem; border-top: 1px solid var(--border); }
+  .faq details { border-bottom: 1px solid var(--border); }
+  .faq summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 1.1rem 0; font: 600 1.15rem/1.3 var(--body); }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; flex: none; width: 1.6rem; height: 1.6rem; display: grid; place-items: center; border-radius: 8px; background: var(--surface-2); color: var(--coral); font-weight: 700; }
+  .faq details[open] summary::after { content: "−"; }
+  .faq details p { padding: 0 0 1.2rem; color: var(--muted); max-width: 46rem; }
 
-  /* ---------- Steps ---------- */
-  .steps { list-style: none; margin: 2.5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 4vw, 56px); counter-reset: step; }
-  .steps li { counter-increment: step; border-top: 2px solid var(--rule); padding-top: 1.1rem; }
-  .steps li::before {
-    content: counter(step);
-    display: block; font: 600 4.2rem/1 var(--display); color: var(--signal); font-variation-settings: "wdth" 85;
-    margin-bottom: .9rem;
-  }
-  .steps h3 { font-size: 1.45rem; line-height: 1.2; }
-  .steps p { margin: .6rem 0 0; color: var(--muted); }
-
-  /* ---------- Closing call to action ---------- */
-  .closer { padding-bottom: clamp(56px, 8vw, 100px); }
-  .closer-box {
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px;
-    padding: clamp(26px, 4vw, 44px); background: var(--panel); border: 1px solid var(--rule); border-radius: 16px;
-  }
-  .closer h2 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); max-width: 20ch; }
-  .closer p { margin: .6rem 0 0; color: var(--muted); }
-
-  /* ---------- Footer ---------- */
-  footer { border-top: 1px solid var(--rule); padding: 32px 0 48px; color: var(--muted); font-size: .92rem; }
-  footer .wrap { display: grid; gap: 10px; }
-  footer p { margin: 0; max-width: 54rem; }
+  /* Footer */
+  footer { border-top: 1px solid var(--border); padding: 40px 0 56px; color: var(--muted); font-size: .95rem; }
+  .foot { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 32px; }
+  .foot .brand { font-size: 1.3rem; margin-bottom: .8rem; }
+  .foot p + p { margin-top: .7rem; }
+  .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+  .foot h3 { font: 700 1rem/1.2 var(--body); color: var(--text); margin-bottom: .7rem; }
 
   /* ---------- Responsive ---------- */
-  @media (max-width: 920px) {
-    .hero .wrap { grid-template-columns: 1fr; }
-    .band { grid-template-columns: 1fr; }
-    .cell { border-left: 0; border-top: 1px solid var(--rule); }
-    .cell:first-child { border-top: 0; }
+  @media (max-width: 960px) {
+    .s4, .s2 { grid-column: span 6; }
+    .wide, .plats, .notes, .foot { grid-template-columns: 1fr; }
     .steps { grid-template-columns: 1fr; }
-    .steps li::before { font-size: 3.4rem; }
   }
-  @media (max-width: 640px) {
-    .nav-links a:not(.btn) { display: none; }
-    .ladder li { grid-template-columns: 3.9rem 3.4rem minmax(0, 1fr); }
-    .ladder b { font-size: 1.7rem; }
-    .btn-lg { width: 100%; justify-content: center; }
+  @media (max-width: 720px) {
+    .nav-in { gap: 10px 16px; padding-bottom: 8px; }
+    .links { order: 3; width: 100%; margin-left: 0; overflow-x: auto; gap: 20px; padding-bottom: 4px; }
+    .nav .btn-ghost { margin-left: auto; }
+    .cta .btn { width: 100%; }
+    .w-row { grid-template-columns: 64px minmax(0, 1fr); }
+    .w-row .pill { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    *, *::before, *::after { animation: none !important; transition: none !important; }
+    *, *::before, *::after { transition: none !important; }
   }
 </style>
 </head>
 
 <body>
-<a class="skip" href="#features">Skip to content</a>
+<a class="skip" href="#main">Skip to content</a>
 
+<!-- ============ Navbar ============ -->
 <header class="nav">
-  <div class="wrap">
-    <a class="brand" href="#top" aria-label="4K Downloader home">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#6a45f4"/><path d="M16 7v13m0 0-5-5m5 5 5-5M9 25h14" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      4K Downloader
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="Prismo home">
+      <span class="logo"><span class="logo-fb" aria-hidden="true"></span><img src="logo.png" alt="Prismo Logo" width="40" height="40"></span>
+      Prismo
     </a>
-    <nav class="nav-links" aria-label="Main">
+    <nav class="links" aria-label="Main">
       <a href="#features">Features</a>
-      <a href="#how">How to use</a>
-      <a href="https://github.com/ShurikenGG/4K-Video-Downloader" rel="noopener">GitHub</a>
-      <a class="btn btn-sm" href="https://github.com/ShurikenGG/4K-Video-Downloader/releases/download/v1.0.0/4K-Downloader-v1.0-Windows.zip" rel="noopener">Download</a>
+      <a href="#download">Windows &amp; Android</a>
+      <a href="#how">How It Works</a>
+      <a href="#faq">FAQ</a>
     </nav>
+    <a class="btn btn-ghost" href="https://github.com/ShurikenGG" rel="noopener">GitHub</a>
   </div>
 </header>
 
-<main id="top">
-  <!-- Hero -->
-  <section class="hero" aria-labelledby="hero-title">
+<main id="main">
+  <!-- ============ Hero ============ -->
+  <section class="hero" id="top" aria-labelledby="hero-title">
     <div class="wrap">
-      <div>
-        <h1 id="hero-title">Save video at the resolution it was made in.</h1>
-        <p class="lead">4K Downloader is a free Windows app for saving videos and playlists in up to 8K. It merges the audio and video for you and keeps a queue running in the background.</p>
-        <div class="cta-row">
-          <a class="btn btn-lg" href="https://github.com/ShurikenGG/4K-Video-Downloader/releases/download/v1.0.0/4K-Downloader-v1.0-Windows.zip" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.6 10.4 4.6v6.7H3zM11.5 4.4 21 3v8.3h-9.5zM3 12.7h7.4v6.7L3 18.4zM11.5 12.7H21V21l-9.5-1.3z"/></svg>
-            Download for Windows
-          </a>
-          <a class="text-link" href="#how">See how it works</a>
-        </div>
-        <p class="cta-note">Free. Version 1.0.0, delivered as a ZIP file.</p>
-      </div>
+      <span class="badge">
+        <span class="logo"><span class="logo-fb" aria-hidden="true"></span><img src="logo.png" alt="Prismo Logo" width="26" height="26"></span>
+        Free and open source for Windows and Android
+      </span>
 
-      <figure class="ladder">
-        <ol aria-label="Resolutions from 720p to 8K, drawn by pixels per frame">
-          <li class="hi"><b>4320</b><span class="tag">8K</span><span class="bar"><i style="--w:100%;--n:4"></i></span></li>
-          <li class="hi"><b>2160</b><span class="tag">4K</span><span class="bar"><i style="--w:25%;--n:3"></i></span></li>
-          <li><b>1440</b><span class="tag">2K</span><span class="bar"><i style="--w:11.1%;--n:2"></i></span></li>
-          <li><b>1080</b><span class="tag">Full HD</span><span class="bar"><i style="--w:6.25%;--n:1"></i></span></li>
-          <li><b>720</b><span class="tag">HD</span><span class="bar"><i style="--w:2.8%;--n:0"></i></span></li>
-        </ol>
-        <figcaption>Pixels in each frame, drawn to scale. 4K holds four times the detail of 1080p, and 8K holds sixteen times.</figcaption>
-      </figure>
+      <h1 id="hero-title">Download 4K Video &amp; Audio. Fast, Private, Zero Limits.</h1>
+      <p class="lead">Prismo runs 100% locally on Windows and Android, powered by yt-dlp and FFmpeg. Save video and audio from YouTube, Twitch, TikTok, Instagram, X, Facebook and 1,000+ other sites, with no third-party servers, no ads and no file limits.</p>
+
+      <div class="cta">
+        <a class="btn btn-win" href="https://github.com/ShurikenGG/Prismo-Windows-Video-Downloader-/releases/download/windows/Prismo-v1.1.0-Windows.zip" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.6 10.4 4.6v6.7H3zM11.5 4.4 21 3v8.3h-9.5zM3 12.7h7.4v6.7L3 18.4zM11.5 12.7H21V21l-9.5-1.3z"/></svg>
+          <span>Download for Windows (.zip)<small>Version 1.1.0</small></span>
+        </a>
+        <a class="btn btn-and" href="https://github.com/ShurikenGG/Prismo-Android-Video-Downloader/releases/download/android/Prismo-v1.0.0-Android.apk" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.6"/><path d="M10.5 18.5h3"/></svg>
+          <span>Download for Android (.apk)<small>Version 1.0.0</small></span>
+        </a>
+      </div>
+      <p class="fine">Windows 10/11 (64-bit) and Android 7.0 or newer. Free, with no account needed.</p>
+      <p class="os-note os-windows">You’re on Windows: the .zip is the one for this PC.</p>
+      <p class="os-note os-android">You’re on Android: the .apk is the one for this phone.</p>
+      <p class="os-note os-other">Prismo runs on Windows and Android. Open this page on your PC or phone to install it.</p>
+
+      <!-- Interface preview with Windows / Android toggle -->
+      <div class="showcase">
+        <div class="toggle" role="tablist" aria-label="Preview the app on">
+          <button role="tab" id="tab-win" aria-selected="true" aria-controls="panel-win" type="button">Windows Desktop</button>
+          <button role="tab" id="tab-and" aria-selected="false" aria-controls="panel-and" tabindex="-1" type="button">Android Mobile</button>
+        </div>
+
+        <div class="stage">
+          <div class="panel" id="panel-win" role="tabpanel" aria-labelledby="tab-win">
+            <div class="frame frame-win">
+              <div class="mock win" aria-hidden="true">
+                <div class="w-bar">
+                  <span class="logo"><span class="logo-fb"></span><img src="logo.png" alt="" width="18" height="18"></span>
+                  Prismo
+                  <span class="w-ctl"><i></i><i></i><i></i></span>
+                </div>
+                <div class="w-body">
+                  <div class="w-tabs"><span class="on">Queue 3</span><span>History 24</span></div>
+                  <div class="w-url"><span>https://www.youtube.com/watch?v=…</span><em>Add to Queue</em></div>
+                  <div class="w-row"><span class="th t1"></span><div><b>Mountain timelapse in 4K</b><small>Nature Channel, 2160p, MKV</small><div class="bar"><i style="--p:72%"></i></div></div><span class="pill dl">Downloading</span></div>
+                  <div class="w-row"><span class="th t2"></span><div><b>Studio session, full set</b><small>Live Sessions, 1080p, MP4</small><div class="bar"><i style="--p:100%"></i></div></div><span class="pill mg">Merging</span></div>
+                  <div class="w-row"><span class="th t3"></span><div><b>Ocean documentary, part 3</b><small>Docs Weekly, Audio, MP3</small><div class="bar"><i style="--p:100%;background:var(--yellow)"></i></div></div><span class="pill ok">Done</span></div>
+                </div>
+              </div>
+              <img class="shot" src="screenshot.png" alt="Prismo on Windows: the download queue with progress bars for each video">
+            </div>
+          </div>
+
+          <div class="panel" id="panel-and" role="tabpanel" aria-labelledby="tab-and" hidden>
+            <div class="frame frame-and">
+              <div class="mock phone" aria-hidden="true">
+                <div class="p-top"><span class="logo"><span class="logo-fb"></span><img src="logo.png" alt="" width="24" height="24"></span>Prismo</div>
+                <div class="p-share"><span>Shared link: tiktok.com/@…</span><em>Add</em></div>
+                <div class="p-list">
+                  <div class="p-card"><span class="th t1"></span><div><b>Mountain timelapse in 4K</b><small>2160p, 64%</small><div class="bar"><i style="--p:64%"></i></div></div></div>
+                  <div class="p-card"><span class="th t2"></span><div><b>Studio session, full set</b><small>1080p, 31%</small><div class="bar"><i style="--p:31%"></i></div></div></div>
+                  <div class="p-card"><span class="th t3"></span><div><b>Ocean documentary, part 3</b><small>MP3, done</small><div class="bar"><i style="--p:100%;background:var(--yellow)"></i></div></div></div>
+                </div>
+                <div class="p-nav"><span class="on">Queue</span><span>History</span></div>
+              </div>
+              <img class="shot" src="android-screenshot.png" alt="Prismo on Android: the download queue on a phone">
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Features -->
+  <!-- ============ Features ============ -->
   <section class="section" id="features" aria-labelledby="features-title">
     <div class="wrap">
-      <h2 id="features-title">Three things it does well</h2>
-      <p class="section-intro">Pick the quality, paste the links, and let the app handle the rest.</p>
+      <h2 id="features-title">Everything it takes to save a video</h2>
+      <p class="intro">Pick a link, pick a quality, and Prismo handles the rest on your own device.</p>
 
-      <div class="band">
-        <article class="cell">
-          <div class="vis" aria-hidden="true">
-            <ul class="opts">
-              <li class="on">Best available (up to 8K)</li>
-              <li>2160p (4K)</li>
-              <li>1440p (2K)</li>
-              <li>1080p</li>
-              <li>720p</li>
-              <li>Audio only (MP3 or M4A)</li>
-            </ul>
+      <div class="bento">
+        <article class="card s4">
+          <h3>True 4K / 8K &amp; MP3 extraction</h3>
+          <p>Video and audio often arrive as separate streams at the highest qualities. Prismo uses FFmpeg to merge those DASH streams into one clean MP4 or MKV, or pulls out just the audio as MP3.</p>
+          <div class="spacer"></div>
+          <div class="chips" aria-hidden="true">
+            <span class="chip">720p</span><span class="chip">1080p</span><span class="chip">1440p</span>
+            <span class="chip hot">4K</span><span class="chip hot">8K</span><span class="chip pink">MP3</span>
           </div>
-          <h3>4K and 8K support</h3>
-          <p>Grab a video at the best quality it offers, up to 8K, or cap it at 4K, 1440p, 1080p or 720p. Video and audio arrive as separate streams, and FFmpeg merges them into a clean MP4 or MKV.</p>
         </article>
 
-        <article class="cell">
-          <div class="vis" aria-hidden="true">
-            <div class="pick">
-              <div class="head"><span class="box"></span>Select All<em>2 of 3 selected</em></div>
-              <div class="on-row"><span class="box on"></span>Lesson 1: Getting started</div>
-              <div class="on-row"><span class="box on"></span>Lesson 2: The basics</div>
-              <div><span class="box"></span>Lesson 3: Bonus material</div>
-            </div>
+        <article class="card s2">
+          <h3>1,000+ supported sites</h3>
+          <p>Works with the sites yt-dlp supports, not just one.</p>
+          <div class="spacer"></div>
+          <div class="chips">
+            <span class="chip">YouTube</span><span class="chip">Twitch</span><span class="chip">TikTok</span>
+            <span class="chip">Reddit</span><span class="chip">Instagram</span><span class="chip">X</span><span class="chip">Facebook</span>
           </div>
-          <h3>Multi-site and playlists</h3>
-          <p>Powered by yt-dlp, so it works with YouTube and many other sites. Paste one link, a batch of links, or a whole playlist, then tick only the videos you want.</p>
         </article>
 
-        <article class="cell">
-          <div class="vis" aria-hidden="true">
+        <article class="card s2">
+          <h3>Multi-download queue &amp; playlists</h3>
+          <p>Queue many links, pick videos from a playlist, download several at once, and pause or cancel any item.</p>
+          <div class="spacer"></div>
+          <div class="mini" aria-hidden="true">
+            <div class="row"><span>Downloading</span><div class="bar"><i style="--p:78%"></i></div></div>
+            <div class="row"><span>Downloading</span><div class="bar"><i style="--p:41%"></i></div></div>
+            <div class="row"><span>Queued</span><div class="bar"><i style="--p:0%"></i></div></div>
+          </div>
+        </article>
+
+        <article class="card s2">
+          <h3>Persistent history &amp; file manager</h3>
+          <p>Revisit what you saved, jump to the file, or delete it from your drive without leaving the app.</p>
+          <div class="spacer"></div>
+          <div class="mini" aria-hidden="true">
+            <div class="hist"><span>Mountain timelapse.mkv</span></div>
+            <div class="chips"><span class="chip">Open Folder</span><span class="chip">Remove from History</span><span class="chip del">Delete File</span></div>
+          </div>
+        </article>
+
+        <article class="card s2">
+          <h3>SponsorBlock &amp; subtitles</h3>
+          <p>Automatically skip sponsors and intros, and embed captions (CC) and cover art in your files.</p>
+          <div class="spacer"></div>
+          <div class="mini" aria-hidden="true">
             <div class="track">
-              <u style="left:0;width:7%;background:var(--cyan)"></u>
-              <u style="left:36%;width:10%;background:var(--green)"></u>
-              <u style="left:89%;width:11%;background:var(--amber)"></u>
+              <u style="left:0;width:8%;background:var(--coral)"></u>
+              <u style="left:38%;width:11%;background:var(--yellow)"></u>
+              <u style="left:90%;width:10%;background:#F59E0B"></u>
             </div>
-            <div class="legend">
-              <span style="--c:var(--cyan)">Intro</span>
-              <span style="--c:var(--green)">Sponsor</span>
-              <span style="--c:var(--amber)">Outro</span>
-            </div>
-            <div class="qrow"><div class="meter"><i style="--p:86%"></i></div><span>86%</span></div>
-            <div class="qrow"><div class="meter"><i style="--p:54%"></i></div><span>54%</span></div>
-            <div class="qrow"><div class="meter"><i style="--p:17%"></i></div><span>17%</span></div>
+            <div class="chips"><span class="chip">CC</span><span class="chip">Cover art</span></div>
           </div>
-          <h3>Built-in queue and SponsorBlock</h3>
-          <p>Line up as many videos as you like and download one to three at a time. Pause, resume or cancel any item. SponsorBlock can cut sponsor, intro and outro segments out of YouTube videos when you turn it on.</p>
+        </article>
+
+        <article class="card s6">
+          <div class="wide">
+            <div style="display:grid;gap:.9rem">
+              <h3>100% local &amp; open source</h3>
+              <p>Prismo downloads straight from the site’s servers to your device. There are no middleman servers and no tracking, and the code is open for anyone to read.</p>
+            </div>
+            <div class="chips">
+              <span class="chip hot">Direct CDN speeds</span><span class="chip">No middleman servers</span>
+              <span class="chip">No tracking</span><span class="chip pink">Open source</span>
+            </div>
+          </div>
         </article>
       </div>
-
-      <p class="also"><strong>Also included:</strong> a clipboard monitor that offers links as you copy them, browser cookies for age-restricted videos, embedded subtitles and cover art, and settings that are remembered between sessions.</p>
     </div>
   </section>
 
-  <!-- How to use -->
-  <section class="section" id="how" aria-labelledby="how-title" style="padding-top:0">
+  <!-- ============ Platform downloads ============ -->
+  <section class="section tight-top" id="download" aria-labelledby="download-title">
     <div class="wrap">
-      <h2 id="how-title">How to use it</h2>
+      <h2 id="download-title">Get Prismo for Windows and Android</h2>
+      <p class="intro">Same app, same features, built natively for each platform. Both are free.</p>
+
+      <div class="plats">
+        <article class="plat plat-win">
+          <div class="plat-head"><h3>Windows</h3><span class="ver">v1.1.0</span></div>
+          <ul class="specs">
+            <li>Windows 10 or 11, 64-bit</li>
+            <li>Portable .zip: extract and run, no installer</li>
+            <li>FFmpeg included, nothing else to install</li>
+            <li>Free and open source</li>
+          </ul>
+          <a class="btn btn-win" href="https://github.com/ShurikenGG/Prismo-Windows-Video-Downloader-/releases/download/windows/Prismo-v1.1.0-Windows.zip" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.6 10.4 4.6v6.7H3zM11.5 4.4 21 3v8.3h-9.5zM3 12.7h7.4v6.7L3 18.4zM11.5 12.7H21V21l-9.5-1.3z"/></svg>
+            Download Windows .zip
+          </a>
+          <a class="more" href="https://github.com/ShurikenGG/Prismo-Windows-Video-Downloader-/releases/tag/windows" rel="noopener">View the release on GitHub</a>
+        </article>
+
+        <article class="plat plat-and">
+          <div class="plat-head"><h3>Android</h3><span class="ver">v1.0.0</span></div>
+          <ul class="specs">
+            <li>Android 7.0 or newer</li>
+            <li>.apk install, outside Google Play</li>
+            <li>Share-menu integration: share a link from your browser or any app straight to Prismo</li>
+            <li>Free and open source</li>
+          </ul>
+          <a class="btn btn-and" href="https://github.com/ShurikenGG/Prismo-Android-Video-Downloader/releases/download/android/Prismo-v1.0.0-Android.apk" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.6"/><path d="M10.5 18.5h3"/></svg>
+            Download Android .apk
+          </a>
+          <a class="more" href="https://github.com/ShurikenGG/Prismo-Android-Video-Downloader/releases/tag/android" rel="noopener">View the release on GitHub</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ How it works ============ -->
+  <section class="section tight-top" id="how" aria-labelledby="how-title">
+    <div class="wrap">
+      <h2 id="how-title">Set up in three steps</h2>
+
       <ol class="steps">
         <li>
-          <h3>Download and unzip</h3>
-          <p>Click Download for Windows, then extract the ZIP file to any folder you like.</p>
+          <h3>Download</h3>
+          <p><b>Windows:</b> click Download for Windows to get the .zip.</p>
+          <p><b>Android:</b> tap Download for Android to get the .apk.</p>
         </li>
         <li>
-          <h3>Choose quality and folder</h3>
-          <p>Pick a resolution, MP4 or MKV, and where finished files should go. The app remembers your choices.</p>
+          <h3>Extract or install</h3>
+          <p><b>Windows:</b> right-click the .zip, choose Extract All, then open Prismo from the new folder.</p>
+          <p><b>Android:</b> open the .apk and tap <b>Allow from this source</b> when Android asks, then tap Install.</p>
         </li>
         <li>
-          <h3>Paste a link</h3>
-          <p>Paste a video or playlist link and click Add to Queue. Downloads start on their own.</p>
+          <h3>Paste or share a link</h3>
+          <p><b>Windows:</b> paste a link, choose your quality, and click Add to Queue.</p>
+          <p><b>Android:</b> share a link to Prismo from your browser or another app, or paste it in.</p>
         </li>
       </ol>
+
+      <div class="notes">
+        <div class="note win">
+          <h3>Windows SmartScreen warning</h3>
+          <p>The first time you run Prismo, Windows may show “Windows protected your PC”. SmartScreen warns about apps it doesn’t recognize yet, and new independent apps often trigger it. Click <b>More info</b>, then <b>Run anyway</b>. Only run files you downloaded from the links on this page.</p>
+        </div>
+        <div class="note and">
+          <h3>Android unknown-apps prompt and updates</h3>
+          <p>Android asks before installing apps from outside Google Play. Choose <b>Allow from this source</b> for your browser or file manager, install Prismo, then switch it back off if you like. For update notifications, add the repository to <a href="https://obtainium.imranr.dev/" rel="noopener">Obtainium</a>:</p>
+          <div class="copyrow">
+            <code id="repo-url">https://github.com/ShurikenGG/Prismo-Android-Video-Downloader</code>
+            <button type="button" id="copy-btn">Copy link</button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Closing call to action -->
-  <section class="closer" aria-labelledby="closer-title">
+  <!-- ============ FAQ ============ -->
+  <section class="section tight-top" id="faq" aria-labelledby="faq-title">
     <div class="wrap">
-      <div class="closer-box">
-        <div>
-          <h2 id="closer-title">Ready to save your first video?</h2>
-          <p>Free for Windows. Version 1.0.0.</p>
-        </div>
-        <a class="btn btn-lg" href="https://github.com/ShurikenGG/4K-Video-Downloader/releases/download/v1.0.0/4K-Downloader-v1.0-Windows.zip" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.6 10.4 4.6v6.7H3zM11.5 4.4 21 3v8.3h-9.5zM3 12.7h7.4v6.7L3 18.4zM11.5 12.7H21V21l-9.5-1.3z"/></svg>
-          Download for Windows
-        </a>
+      <h2 id="faq-title">Questions people ask</h2>
+      <div class="faq">
+        <details>
+          <summary>Is Prismo really free?</summary>
+          <p>Yes. Prismo is free and open source, with no ads and no file limits. The source code is in the GitHub repositories linked at the bottom of this page.</p>
+        </details>
+        <details>
+          <summary>Do my links or files go through a server?</summary>
+          <p>No. Prismo runs on your own device and downloads straight from the site to you. There are no middleman servers and no tracking.</p>
+        </details>
+        <details>
+          <summary>Which sites does it work with?</summary>
+          <p>Any site yt-dlp supports: YouTube, Twitch, TikTok, Reddit, Instagram, X, Facebook and 1,000+ more. Sites change often. If one stops working on Windows, open Settings and choose Check for yt-dlp Updates to refresh the download engine.</p>
+        </details>
+        <details>
+          <summary>Can it download age-restricted or sign-in-only videos?</summary>
+          <p>On Windows, choose your browser under Settings, then Cookies from Browser, so Prismo can use your signed-in session. Close the browser first; Firefox is often the most reliable. Only use this for content you’re allowed to access.</p>
+        </details>
+        <details>
+          <summary>Why do Windows and Android show a warning?</summary>
+          <p>Prismo is a new independent app that you download outside the Microsoft Store and Google Play, so Windows SmartScreen and Android’s unknown-apps prompt may appear. Follow the steps above, and download Prismo only from the links on this page.</p>
+        </details>
+        <details>
+          <summary>Is it legal to download videos?</summary>
+          <p>Only download content you own, content that is in the public domain or licensed for it, or content you have permission to save. Respect each site’s terms and your local copyright law.</p>
+        </details>
       </div>
     </div>
   </section>
 </main>
 
+<!-- ============ Footer ============ -->
 <footer>
-  <div class="wrap">
-    <p>Built on the open-source yt-dlp and FFmpeg projects. 4K Downloader is an independent tool and is not affiliated with YouTube or any other site.</p>
-    <p>Only download videos you own or have permission to save, and follow each site’s terms and your local copyright law.</p>
-    <p><a href="https://github.com/ShurikenGG/4K-Video-Downloader" rel="noopener">Project page on GitHub</a></p>
+  <div class="wrap foot">
+    <div>
+      <a class="brand" href="#top">
+        <span class="logo" style="--s:32px"><span class="logo-fb" aria-hidden="true"></span><img src="logo.png" alt="Prismo Logo" width="32" height="32"></span>
+        Prismo
+      </a>
+      <p>Built on the open-source <a href="https://github.com/yt-dlp/yt-dlp" rel="noopener">yt-dlp</a> and <a href="https://ffmpeg.org" rel="noopener">FFmpeg</a> projects. The Windows interface uses <a href="https://github.com/TomSchimansky/CustomTkinter" rel="noopener">CustomTkinter</a>. Developed with help from <a href="https://claude.ai" rel="noopener">Claude</a> and <a href="https://gemini.google.com" rel="noopener">Gemini</a>.</p>
+      <p>Prismo is an independent project and is not affiliated with YouTube, Twitch, TikTok, Instagram, X, Facebook or any other site. Only download content you have the right to save.</p>
+    </div>
+    <div>
+      <h3>Links</h3>
+      <ul>
+        <li><a href="https://github.com/ShurikenGG/Prismo-Windows-Video-Downloader-" rel="noopener">Windows repository on GitHub</a></li>
+        <li><a href="https://github.com/ShurikenGG/Prismo-Android-Video-Downloader" rel="noopener">Android repository on GitHub</a></li>
+        <!-- TODO: replace the # below with your donation page (Ko-fi, GitHub Sponsors, PayPal, ...) -->
+        <li><a href="#" id="donate">Support / Donate</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // Logo + screenshot fallbacks: show the CSS version until the real image has loaded.
+  document.querySelectorAll(".logo img").forEach(function (img) {
+    var box = img.parentNode;
+    function ok() { box.classList.add("ok"); }
+    function bad() { box.classList.add("bad"); }
+    if (img.complete) { (img.naturalWidth ? ok : bad)(); }
+    else { img.addEventListener("load", ok); img.addEventListener("error", bad); }
+  });
+  document.querySelectorAll(".frame .shot").forEach(function (img) {
+    var frame = img.parentNode;
+    function ok() { frame.classList.add("has-shot"); }
+    if (img.complete && img.naturalWidth) ok();
+    else img.addEventListener("load", ok);
+  });
+
+  // Detect the visitor's device so the right download is called out.
+  var ua = navigator.userAgent || "";
+  var os = /Android/i.test(ua) ? "android" : /Windows/i.test(ua) ? "windows" : "other";
+  document.body.setAttribute("data-os", os);
+
+  // Windows / Android preview toggle (click and arrow keys).
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function pick(tab) {
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute("aria-selected", on ? "true" : "false");
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+    });
+  }
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener("click", function () { pick(tab); });
+    tab.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      var next = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+      pick(next); next.focus();
+    });
+  });
+  if (os === "android") pick(tabs[1]);
+
+  // Copy the Android repository link for Obtainium.
+  var copyBtn = document.getElementById("copy-btn");
+  var repo = document.getElementById("repo-url");
+  copyBtn.addEventListener("click", function () {
+    function done() { copyBtn.textContent = "Copied"; setTimeout(function () { copyBtn.textContent = "Copy link"; }, 1600); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(repo.textContent.trim()).then(done, function () { selectText(); });
+    } else { selectText(); }
+    function selectText() {
+      var r = document.createRange(); r.selectNodeContents(repo);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      copyBtn.textContent = "Press Ctrl+C"; setTimeout(function () { copyBtn.textContent = "Copy link"; }, 2400);
+    }
+  });
+
+  // The donate link is a placeholder until a real URL is added.
+  var donate = document.getElementById("donate");
+  if (donate.getAttribute("href") === "#") donate.addEventListener("click", function (e) { e.preventDefault(); });
+})();
+</script>
 </body>
 </html>
